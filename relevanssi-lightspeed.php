@@ -94,8 +94,17 @@ function relevanssi_light_is_mysql_good() {
  * @return string The modified SQL search query.
  */
 function relevanssi_light_posts_search( $search, $query ) {
+	$mode = '';
+	/**
+	 * Sets the mode for the fulltext search. Defaults to NATURAL LANGUAGE.
+	 *
+	 * @param boolean If true, enables BOOLEAN MODE.
+	 */
+	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
+		$mode = 'IN BOOLEAN MODE';
+	}
 	if ( isset( $query->query['s'] ) ) {
-		$search = "AND MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' IN BOOLEAN MODE)";
+		$search = "AND MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' $mode)";
 	}
 	return $search;
 }
@@ -127,10 +136,19 @@ function relevanssi_light_posts_search_orderby( $orderby, $query ) {
  * @return string The modified SQL search query.
  */
 function relevanssi_light_posts_request( $request, $query ) {
+	$mode = '';
+	/**
+	 * Sets the mode for the fulltext search. Defaults to NATURAL LANGUAGE.
+	 *
+	 * @param boolean If true, enables BOOLEAN MODE.
+	 */
+	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
+		$mode = 'IN BOOLEAN MODE';
+	}
 	if ( isset( $query->query['s'] ) ) {
 		$request = str_replace(
 			'FROM',
-			", MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' IN BOOLEAN MODE) AS relevance FROM",
+			", MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
 			$request
 		);
 	}
