@@ -39,6 +39,7 @@
 */
 
 add_action( 'init', 'relevanssi_light_init' );
+add_action( 'wp_insert_post', 'relevanssi_light_update_post_data' );
 
 /**
  * Adds the required filters.
@@ -153,4 +154,63 @@ function relevanssi_light_posts_request( $request, $query ) {
 		);
 	}
 	return $request;
+}
+
+if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
+	/**
+	 * Reads custom field content and updates the relevanssi_ls_data with it
+	 *
+	 * This is a pluggable function, so feel free to write your own. This
+	 * function uses the relevanssi_light_custom_fields filter hook to adjust
+	 * the custom fields chosen to be added to the field and thus to the index.
+	 *
+	 * @param int $post_id The post ID.
+	 */
+	function relevanssi_light_update_post_data( $post_id ) {
+		global $wpdb;
+
+		/**
+		 * Filters an array of custom field names to include in the fulltext
+		 * index.
+		 *
+		 * A small trick: if you want to include all custom fields, pass an
+		 * empty string in the array, and nothing else.
+		 *
+		 * @param array An array of custom field names.
+		 */
+		$custom_fields = apply_filters( 'relevanssi_light_custom_fields', array() );
+		if ( empty( $custom_fields ) ) {
+			$wpdb->update(
+				$wpdb->posts,
+				array( 'relevanssi_ls_data' => '' ),
+				array( 'ID' => $post_id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+			return;
+		}
+		$extra_content = array_reduce(
+			$custom_fields,
+			function ( $content, $field ) use ( $post_id ) {
+				$values = get_post_meta( $post_id, $field, false );
+				array_walk_recursive(
+					$values,
+					function ( $value ) use ( &$content ) {
+						$content .= ' ' . $value;
+					}
+				);
+				return $content;
+			},
+			''
+		);
+		if ( $extra_content ) {
+			$wpdb->update(
+				$wpdb->posts,
+				array( 'relevanssi_ls_data' => $extra_content ),
+				array( 'ID' => $post_id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+		}
+	}
 }
