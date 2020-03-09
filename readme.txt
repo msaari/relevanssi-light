@@ -19,6 +19,8 @@ Relevanssi Light is very powerful, as it leverages your database to do all the h
 
 Thanks to Otto Kekäläinen (ottok) for the original idea, development push, and all the feedback.
 
+Feedback is welcome. I follow the support forums here, but you can also post an issue on [the Relevanssi Light GitHub page](https://github.com/msaari/relevanssi-light). That's where the active development happens.
+
 = Comparison between Relevanssi Light and Relevanssi =
 
 Relevanssi Light is a simple, easy-to-use tool with limited capabilities. It provides very fast search results with better quality, but with little room for customization and adjustment.
@@ -60,8 +62,6 @@ add_filter( 'relevanssi_light_custom_fields', function( $fields ) { return array
 Now when posts are saved, the custom fields will be added in the index. NOTE: This is not automatically applied to all existing posts, only when the post is saved.
 
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
-
-==
 
 == Changelog ==
 = 0.1 =
