@@ -73,7 +73,7 @@ function relevanssi_light_init() {
 }
 
 /**
- * Checks whether the DB version is at least 5.6.
+ * Checks whether the DB version is at least MySQL 5.6 or MariaDB 10.0.5.
  *
  * Fulltext indexing is not available for MySQL versions under 5.6. Not that you
  * should be using them for WordPress anyway...
@@ -82,6 +82,13 @@ function relevanssi_light_init() {
  */
 function relevanssi_light_is_mysql_good() {
 	global $wpdb;
+	$db_version = $wpdb->get_var( 'SELECT VERSION()' );
+	if ( stripos( $db_version, 'mariadb' ) !== false ) {
+		list( $version, $useless ) = explode( '-', $db_version, 2 );
+		if ( version_compare( $version, '10.0.5', '>=' ) ) {
+			return true;
+		}
+	}
 	if ( version_compare( $wpdb->db_version(), '5.6', '>=' ) ) {
 		return true;
 	}
