@@ -12,7 +12,7 @@
  * @wordpress-plugin
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/
- * Description: This Light plugin replaces WordPress search with a relevance-sorting search.
+ * Description: Replaces the default WP search with a fulltext index search.
  * Version: 0.1
  * Author: Mikko Saari
  * Author URI: https://www.mikkosaari.fi/
@@ -40,6 +40,8 @@
 
 add_action( 'init', 'relevanssi_light_init' );
 add_action( 'wp_insert_post', 'relevanssi_light_update_post_data' );
+
+register_activation_hook( __FILE__, 'relevanssi_light_install' );
 
 /**
  * Adds the required filters.
@@ -87,6 +89,26 @@ function relevanssi_light_is_mysql_good() {
 }
 
 /**
+ * Makes the required changes to the database.
+ *
+ * Adds a longtext column `relevanssi_light_data` to the `wp_posts` database
+ * table and the fulltext index `relevanssi_light_fulltext` which includes the
+ * `post_title`, `post_content`, `post_excerpt` and `relevanssi_light_data`
+ * columns.
+ *
+ * @global object $wpdb The WP database interface.
+ */
+function relevanssi_light_install() {
+	global $wpdb;
+
+	$sql = "ALTER TABLE $wpdb->posts ADD COLUMN `relevanssi_light_data` LONGTEXT AFTER `comment_count`";
+	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+
+	$sql = "ALTER TABLE $wpdb->posts ADD FULLTEXT `relevanssi_light_fulltext` (`post_title`, `post_content`, `post_excerpt`, `relevanssi_light_data` )";
+	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+}
+
+/**
  * Adds the MATCH AGAINST query to the posts_search filter hook.
  *
  * @param string   $search Search SQL for WHERE clause.
@@ -105,7 +127,7 @@ function relevanssi_light_posts_search( $search, $query ) {
 		$mode = 'IN BOOLEAN MODE';
 	}
 	if ( isset( $query->query['s'] ) ) {
-		$search = "AND MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' $mode)";
+		$search = "AND MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode)";
 	}
 	return $search;
 }
@@ -149,7 +171,7 @@ function relevanssi_light_posts_request( $request, $query ) {
 	if ( isset( $query->query['s'] ) ) {
 		$request = str_replace(
 			'FROM',
-			", MATCH(post_title,post_excerpt,post_content,relevanssi_ls_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
+			", MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
 			$request
 		);
 	}
@@ -158,7 +180,7 @@ function relevanssi_light_posts_request( $request, $query ) {
 
 if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 	/**
-	 * Reads custom field content and updates the relevanssi_ls_data with it
+	 * Reads custom field content and updates the relevanssi_light_data with it
 	 *
 	 * This is a pluggable function, so feel free to write your own. This
 	 * function uses the relevanssi_light_custom_fields filter hook to adjust
@@ -182,7 +204,7 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 		if ( empty( $custom_fields ) ) {
 			$wpdb->update(
 				$wpdb->posts,
-				array( 'relevanssi_ls_data' => '' ),
+				array( 'relevanssi_light_data' => '' ),
 				array( 'ID' => $post_id ),
 				array( '%s' ),
 				array( '%d' )
@@ -206,7 +228,7 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 		if ( $extra_content ) {
 			$wpdb->update(
 				$wpdb->posts,
-				array( 'relevanssi_ls_data' => $extra_content ),
+				array( 'relevanssi_light_data' => $extra_content ),
 				array( 'ID' => $post_id ),
 				array( '%s' ),
 				array( '%d' )
