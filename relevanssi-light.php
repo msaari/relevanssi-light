@@ -7,11 +7,11 @@
  * @package Relevanssi Light
  * @author  Mikko Saari
  * @license https://wordpress.org/about/gpl/ GNU General Public License
- * @see     https://www.relevanssi.com/
+ * @see     https://www.relevanssi.com/light/
  *
  * @wordpress-plugin
  * Plugin Name: Relevanssi Light
- * Plugin URI: https://www.relevanssi.com/
+ * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
  * Version: 0.1
  * Author: Mikko Saari
@@ -101,7 +101,7 @@ function relevanssi_light_is_mysql_good() {
 function relevanssi_light_install() {
 	global $wpdb;
 
-	$sql = "ALTER TABLE $wpdb->posts ADD COLUMN `relevanssi_light_data` LONGTEXT AFTER `comment_count`";
+	$sql = "ALTER TABLE $wpdb->posts ADD COLUMN `relevanssi_light_data` LONGTEXT";
 	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
 
 	$sql = "ALTER TABLE $wpdb->posts ADD FULLTEXT `relevanssi_light_fulltext` (`post_title`, `post_content`, `post_excerpt`, `relevanssi_light_data` )";
