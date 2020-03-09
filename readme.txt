@@ -31,11 +31,15 @@ Relevanssi Premium adds more features to Relevanssi: it can index user profiles,
 
 == Installation ==
 
+Relevanssi Light requires a database that supports fulltext indexing. Recent versions of MySQL and MariaDB should be fine.
+
 1. Install the plugin
 1. Activate the plugin
 1. You're done!
 
 Relevanssi Light really is this simple to use. No changes are required to your templates or other configuration. Relevanssi Light automatically adjusts the database queries to use the fulltext index it creates.
+
+Activating the plugin for the first time may cause a timeout. That's just inconvenient, not a real problem: all the database changes still happened and everything should work just fine.
 
 Relevanssi Light is kept very lean on purpose. There are few settings to adjust. If you like adjusting settings, [Relevanssi](https://wordpress.org/plugins/relevanssi/) offers lots of settings to adjust.
 
