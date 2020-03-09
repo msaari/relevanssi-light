@@ -14,7 +14,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$sql = "ALTER TABLE $wpdb->posts DROP COLUMN `relevanssi_light_data` LONGTEXT AFTER `comment_count`";
+$sql = "ALTER TABLE $wpdb->posts DROP COLUMN `relevanssi_light_data`";
 $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
 
 $sql = "ALTER TABLE $wpdb->posts DROP INDEX `relevanssi_light_fulltext`";
