@@ -38,6 +38,8 @@
 	along with Relevanssi Light.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require 'relevanssi-light-menu.php';
+
 add_action( 'init', 'relevanssi_light_init' );
 add_action( 'wp_insert_post', 'relevanssi_light_update_post_data' );
 
@@ -232,6 +234,7 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 			},
 			''
 		);
+
 		if ( $extra_content ) {
 			$wpdb->update(
 				$wpdb->posts,
@@ -242,4 +245,87 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 			);
 		}
 	}
+}
+
+function relevanssi_light_process() {
+	$args = array(
+		'post_status' => 'publish',
+		'numberposts' => -1,
+		'fields'      => 'ids',
+	);
+	$posts   = get_posts( $args );
+	$chunked = array_chunk( $posts, 100 );
+	array_walk( $posts, 'relevanssi_light_update_post_data' );
+	echo '<p>Processed ' . count( $posts ) . ' posts.</p>';
+}
+
+/**
+ * Launches an asynchronous Ajax action.
+ *
+ * Makes a wp_remote_post() call with the specific action. Handles nonce
+ * verification.
+ *
+ * @see wp_remote_post()
+ * @see wp_create_nonce()
+ *
+ * @param string $action       The action to trigger (also the name of the
+ * nonce).
+ * @param array  $payload_args The parameters sent to the action. Defaults to
+ * an empty array.
+ *
+ * @return WP_Error|array The wp_remote_post() response or WP_Error on failure.
+ */
+function relevanssi_light_launch_ajax_action( $action, $payload_args = array() ) {
+	$cookies = array();
+	foreach ( $_COOKIE as $name => $value ) {
+		$cookies[] = "$name=" . rawurlencode(
+			is_array( $value ) ? wp_json_encode( $value ) : $value
+		);
+	}
+	$default_payload = array(
+		'action' => $action,
+		'_nonce' => wp_create_nonce( $action ),
+	);
+	$payload         = array_merge( $default_payload, $payload_args );
+	$args            = array(
+		'timeout'  => 0.01,
+		'blocking' => false,
+		'body'     => $payload,
+		'headers'  => array(
+			'cookie' => implode( '; ', $cookies ),
+		),
+	);
+	$url             = admin_url( 'admin-ajax.php' );
+	return wp_remote_post( $url, $args );
+}
+
+add_action( 'wp_ajax_relevanssi_light_get_chunks', 'relevanssi_light_get_chunks' );
+
+function relevanssi_light_get_chunks() {
+	check_ajax_referer( 'relevanssi_light_process_nonce', 'security' );
+
+	$args = array(
+		'post_status' => 'publish',
+		'numberposts' => -1,
+		'fields'      => 'ids',
+	);
+
+	$posts   = get_posts( $args );
+	$chunked = array_chunk( $posts, 100 );
+
+	echo wp_json_encode( $chunked );
+	die();
+}
+
+add_action( 'wp_ajax_relevanssi_light_process_chunks', 'relevanssi_light_process_chunks' );
+
+function relevanssi_light_process_chunks() {
+	check_ajax_referer( 'relevanssi_light_process_nonce', 'security' );
+
+	array_walk( $_POST['chunk'], 'relevanssi_light_update_post_data' );
+	$response = array(
+		'data' => 'Processed ' . count( $_POST['chunk'] ) . ' posts.',
+	);
+	echo wp_json_encode( $response );
+	die();
 }
