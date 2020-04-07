@@ -49,9 +49,7 @@ Fulltext indexing offers two modes of operation. In Natural language mode there 
 
 Relevanssi Light uses Natural language mode, as it's the better choice for large majority of cases. If you need to use Boolean mode, you can enable it by adding this to your theme `functions.php`:
 
-```
-add_filter( 'relevanssi_light_boolean_mode', '__return_true' );
-```
+`add_filter( 'relevanssi_light_boolean_mode', '__return_true' );`
 
 = Including custom field content and more =
 
@@ -59,9 +57,7 @@ By default Relevanssi Light includes post titles, post content and excerpts in t
 
 Relevanssi Light has a method of adding custom field content to this column. It is done by providing a list of custom field names with the `relevanssi_light_custom_fields` filter hook. For example, in order to include the custom fields `_sku` and `seo_meta_desc` in the index, you could add this to the theme `functions.php`:
 
-```
-add_filter( 'relevanssi_light_custom_fields', function( $fields ) { return array( '_sku', 'seo_meta_desc' ); } );
-```
+`add_filter( 'relevanssi_light_custom_fields', function( $fields ) { return array( '_sku', 'seo_meta_desc' ); } );`
 
 Now when posts are saved, the custom fields will be added in the index. NOTE: This is not automatically applied to all existing posts, only when the post is saved.
 
