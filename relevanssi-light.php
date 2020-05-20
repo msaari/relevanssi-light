@@ -41,9 +41,12 @@
 require 'relevanssi-light-menu.php';
 
 add_action( 'init', 'relevanssi_light_init' );
+add_action( 'admin_init', 'relevanssi_light_install' );
 add_action( 'wp_insert_post', 'relevanssi_light_update_post_data' );
+add_action( 'wp_ajax_relevanssi_light_database_alteration', 'relevanssi_light_database_alteration_action' );
+add_action( 'wp_ajax_nopriv_relevanssi_light_database_alteration', 'relevanssi_light_database_alteration_action' );
 
-register_activation_hook( __FILE__, 'relevanssi_light_install' );
+register_activation_hook( __FILE__, 'relevanssi_light_activate' );
 
 /**
  * Adds the required filters.
@@ -72,6 +75,7 @@ function relevanssi_light_init() {
 		add_filter( 'posts_search_orderby', 'relevanssi_light_posts_search_orderby', 10, 2 );
 		add_filter( 'posts_request', 'relevanssi_light_posts_request', 10, 2 );
 	}
+
 }
 
 /**
@@ -86,7 +90,7 @@ function relevanssi_light_is_mysql_good() {
 	global $wpdb;
 	$db_version = $wpdb->get_var( 'SELECT VERSION()' );
 	if ( stripos( $db_version, 'mariadb' ) !== false ) {
-		list( $version, $useless ) = explode( '-', $db_version, 2 );
+		list( $version, ) = explode( '-', $db_version, 2 );
 		if ( version_compare( $version, '10.0.5', '>=' ) ) {
 			return true;
 		}
@@ -95,6 +99,29 @@ function relevanssi_light_is_mysql_good() {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * Adds an option that is later checked in an admin_init action in order to run
+ * this just once per activation (apparently it's impossible to launch an AJAX
+ * action directly from this activation hook).
+ */
+function relevanssi_light_activate() {
+	add_option( 'relevanssi_light_activated', 'yes' );
+}
+
+/**
+ * Runs the relevanssi_light_database_alteration_action() function through an
+ * AJAX action to make it run as an async background action (because it takes
+ * a long time to run).
+ */
+function relevanssi_light_install() {
+	if ( is_admin() && 'yes' === get_option( 'relevanssi_light_activated' ) ) {
+		delete_option( 'relevanssi_light_activated' );
+		relevanssi_light_launch_ajax_action(
+			'relevanssi_light_database_alteration'
+		);
+	}
 }
 
 /**
@@ -107,14 +134,26 @@ function relevanssi_light_is_mysql_good() {
  *
  * @global object $wpdb The WP database interface.
  */
-function relevanssi_light_install() {
+function relevanssi_light_database_alteration_action() {
+	if ( ! wp_verify_nonce( $_REQUEST['_nonce'], 'relevanssi_light_database_alteration' ) ) {
+		wp_die();
+	}
+
 	global $wpdb;
 
-	$sql = "ALTER TABLE $wpdb->posts ADD COLUMN `relevanssi_light_data` LONGTEXT";
-	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+	$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM $wpdb->posts LIKE 'relevanssi_light_data'" );
+	if ( ! $column_exists ) {
+		$sql = "ALTER TABLE $wpdb->posts ADD COLUMN `relevanssi_light_data` LONGTEXT";
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+	}
 
-	$sql = "ALTER TABLE $wpdb->posts ADD FULLTEXT `relevanssi_light_fulltext` (`post_title`, `post_content`, `post_excerpt`, `relevanssi_light_data` )";
-	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+	$index_exists = $wpdb->get_row( "SHOW index FROM $wpdb->posts where Column_name = 'relevanssi_light_data'" );
+	if ( ! $index_exists ) {
+		$sql = "ALTER TABLE $wpdb->posts ADD FULLTEXT `relevanssi_light_fulltext` (`post_title`, `post_content`, `post_excerpt`, `relevanssi_light_data` )";
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+	}
+
+	wp_die();
 }
 
 /**
@@ -288,7 +327,7 @@ function relevanssi_light_launch_ajax_action( $action, $payload_args = array() )
 	);
 	$payload         = array_merge( $default_payload, $payload_args );
 	$args            = array(
-		'timeout'  => 0.01,
+		'timeout'  => 1,
 		'blocking' => false,
 		'body'     => $payload,
 		'headers'  => array(
@@ -296,6 +335,7 @@ function relevanssi_light_launch_ajax_action( $action, $payload_args = array() )
 		),
 	);
 	$url             = admin_url( 'admin-ajax.php' );
+
 	return wp_remote_post( $url, $args );
 }
 
