@@ -3,9 +3,9 @@ Contributors: msaari
 Donate link: https://www.relevanssi.com/light/
 Tags: search, fulltext
 Requires at least: 5.3
-Tested up to: 5.3.2
+Tested up to: 5.4.1
 Requires PHP: 7.2
-Stable tag: 0.1
+Stable tag: 1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,9 +64,17 @@ Now when posts are saved, the custom fields will be added in the index. NOTE: Th
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
 
 == Changelog ==
+= 1.0 =
+* Adds an settings page to show information about the plugin.
+* Database alterations are done asynchronously to avoid plugin activation stalling.
+* Uninstalling the plugin in multisite context now works.
+
 = 0.1 =
 * First release, minimum viable product!
 
 == Upgrade notice ==
+= 1.0 =
+* First proper release.
+
 = 0.1 =
 * First release.

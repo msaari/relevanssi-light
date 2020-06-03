@@ -13,7 +13,7 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 0.1
+ * Version: 1.0
  * Author: Mikko Saari
  * Author URI: https://www.mikkosaari.fi/
  * Text Domain: relevanssilight
@@ -38,6 +38,7 @@
 	along with Relevanssi Light.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+require 'relevanssi-light-admin-ajax.php';
 require 'relevanssi-light-menu.php';
 
 add_action( 'init', 'relevanssi_light_init' );
@@ -286,18 +287,6 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 	}
 }
 
-function relevanssi_light_process() {
-	$args = array(
-		'post_status' => 'publish',
-		'numberposts' => -1,
-		'fields'      => 'ids',
-	);
-	$posts   = get_posts( $args );
-	$chunked = array_chunk( $posts, 100 );
-	array_walk( $posts, 'relevanssi_light_update_post_data' );
-	echo '<p>Processed ' . count( $posts ) . ' posts.</p>';
-}
-
 /**
  * Launches an asynchronous Ajax action.
  *
@@ -337,35 +326,4 @@ function relevanssi_light_launch_ajax_action( $action, $payload_args = array() )
 	$url             = admin_url( 'admin-ajax.php' );
 
 	return wp_remote_post( $url, $args );
-}
-
-add_action( 'wp_ajax_relevanssi_light_get_chunks', 'relevanssi_light_get_chunks' );
-
-function relevanssi_light_get_chunks() {
-	check_ajax_referer( 'relevanssi_light_process_nonce', 'security' );
-
-	$args = array(
-		'post_status' => 'publish',
-		'numberposts' => -1,
-		'fields'      => 'ids',
-	);
-
-	$posts   = get_posts( $args );
-	$chunked = array_chunk( $posts, 100 );
-
-	echo wp_json_encode( $chunked );
-	die();
-}
-
-add_action( 'wp_ajax_relevanssi_light_process_chunks', 'relevanssi_light_process_chunks' );
-
-function relevanssi_light_process_chunks() {
-	check_ajax_referer( 'relevanssi_light_process_nonce', 'security' );
-
-	array_walk( $_POST['chunk'], 'relevanssi_light_update_post_data' );
-	$response = array(
-		'data' => 'Processed ' . count( $_POST['chunk'] ) . ' posts.',
-	);
-	echo wp_json_encode( $response );
-	die();
 }

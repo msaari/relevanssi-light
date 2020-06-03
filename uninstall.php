@@ -26,6 +26,12 @@ if ( function_exists( 'is_multisite' ) && is_multisite() ) {
 	relevanssi_light_uninstall();
 }
 
+/**
+ * Removes Relevanssi Light features from the database tables and options.
+ *
+ * Removes the relevanssi_light_data column, the relevanssi_light_fulltext
+ * index, and the relevanssi_light option.
+ */
 function relevanssi_light_uninstall() {
 	global $wpdb;
 

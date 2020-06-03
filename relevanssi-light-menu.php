@@ -36,10 +36,6 @@ function relevanssi_light_add_admin_menu() {
  * unlikely to change in the future.
  */
 function relevanssi_light_options_page() {
-	if ( ! empty( $_REQUEST['process'] ) ) {
-		check_admin_referer( plugin_basename( __FILE__ ), 'relevanssi_light' );
-		relevanssi_light_process();
-	}
 	?>
 	<div class="wrap">
 	<?php
