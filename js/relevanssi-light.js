@@ -1,11 +1,11 @@
-jQuery(document).ready(function($) {
-	$("#process").click(function() {
+jQuery(document).ready(function ($) {
+	$("#process").click(function () {
 		console.log("Getting chunks")
 		var data = {
 			action: "relevanssi_light_get_chunks",
-			security: nonce.relevanssi_light_process_nonce
+			security: nonce.relevanssi_light_process_nonce,
 		}
-		jQuery.post(ajaxurl, data, function(response) {
+		jQuery.post(ajaxurl, data, function (response) {
 			chunks = JSON.parse(response)
 			console.log("Received chunks")
 			var totalChunks = 0
@@ -27,9 +27,9 @@ function process_chunks(chunks) {
 	var data = {
 		action: "relevanssi_light_process_chunks",
 		chunk: chunk,
-		security: nonce.relevanssi_light_process_nonce
+		security: nonce.relevanssi_light_process_nonce,
 	}
-	jQuery.post(ajaxurl, data, function(response) {
+	jQuery.post(ajaxurl, data, function (response) {
 		var progressMeter = jQuery("#relevanssi_light_process")
 
 		var currentValue = progressMeter.attr("value")
