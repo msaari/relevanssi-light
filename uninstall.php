@@ -14,10 +14,26 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-$sql = "ALTER TABLE $wpdb->posts DROP COLUMN `relevanssi_light_data`";
-$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+	$blogids    = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+	$old_blogid = $wpdb->blogid;
+	foreach ( $blogids as $uninstall_blog_id ) {
+		switch_to_blog( $uninstall_blog_id );
+		relevanssi_light_uninstall();
+		restore_current_blog();
+	}
+} else {
+	relevanssi_light_uninstall();
+}
 
-$sql = "ALTER TABLE $wpdb->posts DROP INDEX `relevanssi_light_fulltext`";
-$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+function relevanssi_light_uninstall() {
+	global $wpdb;
 
-delete_option( 'relevanssi_light' );
+	$sql = "ALTER TABLE $wpdb->posts DROP COLUMN `relevanssi_light_data`";
+	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+
+	$sql = "ALTER TABLE $wpdb->posts DROP INDEX `relevanssi_light_fulltext`";
+	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
+
+	delete_option( 'relevanssi_light' );
+}
