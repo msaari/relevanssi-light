@@ -3,9 +3,9 @@ Contributors: msaari
 Donate link: https://www.relevanssi.com/light/
 Tags: search, fulltext
 Requires at least: 5.3
-Tested up to: 5.4.1
+Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Now when posts are saved, the custom fields will be added in the index. NOTE: Th
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
 
 == Changelog ==
+= 1.1 =
+* Fixes the network activation. Now when Relevanssi Light is network activated on a multisite installation, the database changes required are implemented on all network sites (as soon as someone visits the site admin dashboard).
+
 = 1.0 =
 * Adds an settings page to show information about the plugin.
 * Database alterations are done asynchronously to avoid plugin activation stalling.
@@ -73,6 +76,9 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 * First release, minimum viable product!
 
 == Upgrade notice ==
+= 1.1 =
+* Fix for the network activation on multisite.
+
 = 1.0 =
 * First proper release.
 

@@ -13,10 +13,12 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 1.0
+ * Version: 1.1
  * Author: Mikko Saari
  * Author URI: https://www.mikkosaari.fi/
  * Text Domain: relevanssilight
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 /*
@@ -46,6 +48,7 @@ add_action( 'admin_init', 'relevanssi_light_install' );
 add_action( 'wp_insert_post', 'relevanssi_light_update_post_data' );
 add_action( 'wp_ajax_relevanssi_light_database_alteration', 'relevanssi_light_database_alteration_action' );
 add_action( 'wp_ajax_nopriv_relevanssi_light_database_alteration', 'relevanssi_light_database_alteration_action' );
+add_action( 'wp_insert_site', 'relevanssi_light_new_blog', 10, 1 );
 
 register_activation_hook( __FILE__, 'relevanssi_light_activate' );
 
@@ -117,11 +120,35 @@ function relevanssi_light_activate() {
  * a long time to run).
  */
 function relevanssi_light_install() {
+	$plugin_active_here = false;
+	if ( is_plugin_active_for_network( 'relevanssi-light/relevanssi-light.php' )
+		&& 'done' !== get_option( 'relevanssi_light_activated' ) ) {
+		$plugin_active_here = true;
+	}
 	if ( is_admin() && 'yes' === get_option( 'relevanssi_light_activated' ) ) {
-		delete_option( 'relevanssi_light_activated' );
+		$plugin_active_here = true;
+	}
+	if ( $plugin_active_here ) {
+		update_option( 'relevanssi_light_activated', 'done' );
 		relevanssi_light_launch_ajax_action(
 			'relevanssi_light_database_alteration'
 		);
+	}
+}
+
+/**
+ * Installs Relevanssi Light on a new site.
+ *
+ * Hooks on to 'wp_insert_site' action hooks and runs the installation function
+ * 'relevanssi_light_install' on the new site.
+ *
+ * @param object $site The new site object.
+ */
+function relevanssi_light_new_blog( $site ) {
+	if ( is_plugin_active_for_network( 'relevanssi-light/relevanssi-light.php' ) ) {
+		switch_to_blog( $site->id );
+		relevanssi_light_install();
+		restore_current_blog();
 	}
 }
 

@@ -42,4 +42,5 @@ function relevanssi_light_uninstall() {
 	$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
 
 	delete_option( 'relevanssi_light' );
+	delete_option( 'relevanssi_light_activated' );
 }
