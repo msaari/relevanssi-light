@@ -2,7 +2,7 @@
 Contributors: msaari
 Donate link: https://www.relevanssi.com/light/
 Tags: search, fulltext
-Requires at least: 5.3
+Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.2
 Stable tag: 1.1
