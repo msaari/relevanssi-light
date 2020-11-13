@@ -24,6 +24,10 @@ jQuery(document).ready(function ($) {
 function process_chunks(chunks) {
 	console.log("Processing chunk")
 	var chunk = chunks.shift()
+	if ( ! chunk ) {
+		console.log("No chunk received!");
+		return
+	}
 	var data = {
 		action: "relevanssi_light_process_chunks",
 		chunk: chunk,

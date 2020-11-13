@@ -13,7 +13,7 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 1.1
+ * Version: 1.2
  * Author: Mikko Saari
  * Author URI: https://www.mikkosaari.fi/
  * Text Domain: relevanssilight

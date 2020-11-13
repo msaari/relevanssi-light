@@ -24,6 +24,7 @@ function relevanssi_light_get_chunks() {
 		'post_status' => 'publish',
 		'numberposts' => -1,
 		'fields'      => 'ids',
+		'post_type'   => 'any',
 	);
 
 	$posts   = get_posts( $args );
