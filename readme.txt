@@ -64,6 +64,9 @@ Now when posts are saved, the custom fields will be added in the index. NOTE: Th
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
 
 == Changelog ==
+= 1.2.1 =
+* Fixes errors in admin searches.
+
 = 1.2 =
 * Makes the 'Process all posts' cover all posts, not just the post type `post`.
 
@@ -79,6 +82,9 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 * First release, minimum viable product!
 
 == Upgrade notice ==
+= 1.2.1 =
+* Fixes errors in admin searches.
+
 = 1.2 =
 * Makes the 'Process all posts' cover all posts, not just the post type `post`.
 

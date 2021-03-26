@@ -202,8 +202,8 @@ function relevanssi_light_posts_search( $search, $query ) {
 	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
 		$mode = 'IN BOOLEAN MODE';
 	}
-	if ( isset( $query->query['s'] ) ) {
-		$search = "AND MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode)";
+	if ( isset( $query->query['s'] ) && ! empty( $query->query['s'] ) ) {
+		$search = " AND MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode)";
 	}
 	return $search;
 }
@@ -244,7 +244,7 @@ function relevanssi_light_posts_request( $request, $query ) {
 	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
 		$mode = 'IN BOOLEAN MODE';
 	}
-	if ( isset( $query->query['s'] ) ) {
+	if ( isset( $query->query['s'] ) && ! empty( $query->query['s'] ) ) {
 		$request = str_replace(
 			'FROM',
 			", MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
