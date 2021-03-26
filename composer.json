@@ -1,0 +1,17 @@
+{
+    "name": "msaari/relevanssi-light",
+    "description": "A simple, quick and effective search improvement that replaces the default WP search with a fulltext index search.",
+    "require": {
+        "php": "^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.5",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "phpcompatibility/php-compatibility": "^9.3",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "wp-coding-standards/wpcs": "*"
+    },
+    "scripts": {
+        "lint": "./vendor/bin/phpcs -p -s"
+    }
+}
