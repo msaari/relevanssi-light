@@ -22,7 +22,7 @@
  */
 
 /*
-	Copyright 2021 Mikko Saari  (email: mikko@mikkosaari.fi)
+	Copyright 2022 Mikko Saari  (email: mikko@mikkosaari.fi)
 
 	This file is part of Relevanssi Light, a search plugin for WordPress.
 
