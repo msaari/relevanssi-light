@@ -162,11 +162,7 @@ function relevanssi_light_new_blog( $site ) {
  *
  * @global object $wpdb The WP database interface.
  */
-function relevanssi_light_database_alteration_action() {
-	if ( ! wp_verify_nonce( $_REQUEST['_nonce'], 'relevanssi_light_database_alteration' ) ) {
-		wp_die();
-	}
-
+function relevanssi_light_alter_table() {
 	global $wpdb;
 
 	$column_exists = $wpdb->get_row( "SHOW COLUMNS FROM $wpdb->posts LIKE 'relevanssi_light_data'" );
@@ -180,8 +176,19 @@ function relevanssi_light_database_alteration_action() {
 		$sql = "ALTER TABLE $wpdb->posts ADD FULLTEXT `relevanssi_light_fulltext` (`post_title`, `post_content`, `post_excerpt`, `relevanssi_light_data` )";
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery
 	}
+}
 
-	wp_die();
+/**
+ * Triggers the database alterations and checks the nonce.
+ */
+function relevanssi_light_database_alteration_action() {
+	if ( ! wp_verify_nonce( $_REQUEST['_nonce'], 'relevanssi_light_database_alteration' ) ) {
+		wp_send_json_error( 'Nonce check failed.', 403 );
+	}
+
+	relevanssi_light_alter_table();
+
+	wp_send_json_success();
 }
 
 /**
