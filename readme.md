@@ -66,6 +66,10 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 
 ## Changelog
 
+### 1.2.2
+
+* Fixes a minor SQL injection vulnerability.
+
 ### 1.2.1
 
 * Fixes errors in admin searches.
@@ -89,6 +93,10 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 * First release, minimum viable product!
 
 ## Upgrade notice
+
+### 1.2.2
+
+* Fixes a minor SQL injection vulnerability.
 
 ### 1.2.1
 

@@ -13,7 +13,7 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Mikko Saari
  * Author URI: https://www.mikkosaari.fi/
  * Text Domain: relevanssilight
@@ -252,10 +252,11 @@ function relevanssi_light_posts_request( $request, $query ) {
 		$mode = 'IN BOOLEAN MODE';
 	}
 	if ( isset( $query->query['s'] ) && ! empty( $query->query['s'] ) ) {
-		$request = str_replace(
-			'FROM',
+		$request = preg_replace(
+			'/FROM/',
 			", MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
-			$request
+			$request,
+			1
 		);
 	}
 	return $request;
