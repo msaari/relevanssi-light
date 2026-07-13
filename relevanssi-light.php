@@ -200,17 +200,17 @@ function relevanssi_light_database_alteration_action() {
  * @return string The modified SQL search query.
  */
 function relevanssi_light_posts_search( $search, $query ) {
-	$mode = '';
+	$boolean_mode = false;
 	/**
 	 * Sets the mode for the fulltext search. Defaults to NATURAL LANGUAGE.
 	 *
-	 * @param boolean If true, enables BOOLEAN MODE.
+	 * @param boolean $boolean_mode If true, enables BOOLEAN MODE.
 	 */
 	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
-		$mode = 'IN BOOLEAN MODE';
+		$boolean_mode = true;
 	}
 	if ( isset( $query->query['s'] ) && ! empty( $query->query['s'] ) ) {
-		$search = " AND MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode)";
+		$search = relevanssi_light_prepared_clause( $query, $boolean_mode, false );
 	}
 	return $search;
 }
@@ -242,24 +242,52 @@ function relevanssi_light_posts_search_orderby( $orderby, $query ) {
  * @return string The modified SQL search query.
  */
 function relevanssi_light_posts_request( $request, $query ) {
-	$mode = '';
+	$boolean_mode = false;
 	/**
 	 * Sets the mode for the fulltext search. Defaults to NATURAL LANGUAGE.
 	 *
-	 * @param boolean If true, enables BOOLEAN MODE.
+	 * @param boolean $value If true, enables BOOLEAN MODE.
 	 */
 	if ( apply_filters( 'relevanssi_light_boolean_mode', false ) ) {
-		$mode = 'IN BOOLEAN MODE';
+		$boolean_mode = true;
 	}
 	if ( isset( $query->query['s'] ) && ! empty( $query->query['s'] ) ) {
-		$request = preg_replace(
+		$request = preg_replace_callback(
 			'/FROM/',
-			", MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST('" . $query->query['s'] . "' $mode) AS relevance FROM",
+			function () use ( $query, $boolean_mode ) {
+				return relevanssi_light_prepared_clause( $query, $boolean_mode, true );
+			},
 			$request,
 			1
 		);
 	}
 	return $request;
+}
+
+/**
+ * Returns a prepared MySQL query part.
+ *
+ * @param WP_Query $query        The current WP_Query object.
+ * @param bool     $boolean_mode Natural or Boolean mode.
+ * @param bool     $as_query     Which format of output.
+ * @return string
+ */
+function relevanssi_light_prepared_clause( $query, $boolean_mode = false, $as_query = false ): string {
+	global $wpdb, $relevanssi_light_prepared_query;
+	if ( ! isset( $relevanssi_light_prepared_query ) ) {
+		$query_string = $boolean_mode ?
+			' MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST(%s IN BOOLEAN MODE)' :
+			' MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST(%s)';
+
+		$relevanssi_light_prepared_query = $wpdb->prepare( $query_string, $query->get( 's' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	}
+	$return_value = $relevanssi_light_prepared_query;
+	if ( $as_query ) {
+		$return_value = ', ' . $relevanssi_light_prepared_query . ' AS relevance FROM';
+	} else {
+		$return_value = ' AND ' . $return_value;
+	}
+	return $return_value;
 }
 
 if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
@@ -282,7 +310,7 @@ if ( ! function_exists( 'relevanssi_light_update_post_data' ) ) {
 		 * A small trick: if you want to include all custom fields, pass an
 		 * empty string in the array, and nothing else.
 		 *
-		 * @param array An array of custom field names.
+		 * @param array $fields An array of custom field names.
 		 */
 		$custom_fields = apply_filters( 'relevanssi_light_custom_fields', array() );
 		if ( empty( $custom_fields ) ) {
