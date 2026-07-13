@@ -5,7 +5,7 @@
  * /relevanssi-light.php
  *
  * @package Relevanssi Light
- * @author  Mikko Saari
+ * @author  eurodata comesio GmbH
  * @license https://wordpress.org/about/gpl/ GNU General Public License
  * @see     https://www.relevanssi.com/light/
  *
@@ -13,16 +13,16 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 1.2.2
- * Author: Mikko Saari
- * Author URI: https://www.mikkosaari.fi/
+ * Version: 1.2.3
+ * Author: eurodata comesio GmbH <hello@relevanssi.com>
+ * Author URI: https://www.relevanssi.com/
  * Text Domain: relevanssilight
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
 
 /*
-	Copyright 2022 Mikko Saari  (email: mikko@mikkosaari.fi)
+	Copyright 2026 eurodata comesio GmbH  (email: hello@relevanssi.com)
 
 	This file is part of Relevanssi Light, a search plugin for WordPress.
 

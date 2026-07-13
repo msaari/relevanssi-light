@@ -3,9 +3,9 @@ Contributors: msaari
 Donate link: https://www.relevanssi.com/light/
 Tags: search, fulltext
 Requires at least: 5.0
-Tested up to: 6.1
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Now when posts are saved, the custom fields will be added in the index. NOTE: Th
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
 
 == Changelog ==
+= 1.2.3 =
+* Fixes a SQL injection vulnerability that affected REST searches. Thanks to Artus KG.
+
 = 1.2.2 =
 * Fixes a minor SQL injection vulnerability.
 
@@ -85,20 +88,5 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 * First release, minimum viable product!
 
 == Upgrade notice ==
-= 1.2.2 =
-* Fixes a minor SQL injection vulnerability.
-
-= 1.2.1 =
-* Fixes errors in admin searches.
-
-= 1.2 =
-* Makes the 'Process all posts' cover all posts, not just the post type `post`.
-
-= 1.1 =
-* Fix for the network activation on multisite.
-
-= 1.0 =
-* First proper release.
-
-= 0.1 =
-* First release.
+= 1.2.3 =
+* REST search SQL vulnerability fix.

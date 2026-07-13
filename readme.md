@@ -4,9 +4,9 @@
 **Donate link:** https://www.relevanssi.com/light/ \
 **Tags:** search, fulltext \
 **Requires at least:** 5.0 \
-**Tested up to:** 6.1 \
+**Tested up to:** 7.1 \
 **Requires PHP:** 7.2 \
-**Stable tag:** 1.2.2 \
+**Stable tag:** 1.2.3 \
 **License:** GPLv2 or later \
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,10 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 
 ## Changelog
 
+### 1.2.3
+
+* Fixes a SQL injection vulnerability that affected REST searches. Thanks to Artus KG.
+
 ### 1.2.2
 
 * Fixes a minor SQL injection vulnerability.
@@ -94,27 +98,5 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 
 ## Upgrade notice
 
-### 1.2.2
-
-* Fixes a minor SQL injection vulnerability.
-
-### 1.2.1
-
-* Fixes errors in admin searches.
-
-### 1.2
-
-* Makes the 'Process all posts' cover all posts, not just the post type `post`.
-
-### 1.1
-
-* Fix for the network activation on multisite.
-
-### 1.0
-
-* First proper release.
-
-### 0.1
-
-* First release.
-
+### 1.2.3
+* REST search SQL vulnerability fix.
