@@ -13,7 +13,7 @@
  * Plugin Name: Relevanssi Light
  * Plugin URI: https://www.relevanssi.com/light/
  * Description: Replaces the default WP search with a fulltext index search.
- * Version: 1.2.3
+ * Version: 1.2.4
  * Author: eurodata comesio GmbH <hello@relevanssi.com>
  * Author URI: https://www.relevanssi.com/
  * Text Domain: relevanssilight
@@ -274,18 +274,17 @@ function relevanssi_light_posts_request( $request, $query ) {
  */
 function relevanssi_light_prepared_clause( $query, $boolean_mode = false, $as_query = false ): string {
 	global $wpdb, $relevanssi_light_prepared_query;
-	if ( ! isset( $relevanssi_light_prepared_query ) ) {
+	if ( ! isset( $relevanssi_light_prepared_query[ $query->get( 's' ) ] ) ) {
 		$query_string = $boolean_mode ?
 			' MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST(%s IN BOOLEAN MODE)' :
 			' MATCH(post_title,post_excerpt,post_content,relevanssi_light_data) AGAINST(%s)';
 
-		$relevanssi_light_prepared_query = $wpdb->prepare( $query_string, $query->get( 's' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$relevanssi_light_prepared_query[ $query->get( 's' ) ] = $wpdb->prepare( $query_string, $query->get( 's' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
-	$return_value = $relevanssi_light_prepared_query;
 	if ( $as_query ) {
-		$return_value = ', ' . $relevanssi_light_prepared_query . ' AS relevance FROM';
+		$return_value = ', ' . $relevanssi_light_prepared_query[ $query->get( 's' ) ] . ' AS relevance FROM';
 	} else {
-		$return_value = ' AND ' . $return_value;
+		$return_value = ' AND ' . $relevanssi_light_prepared_query[ $query->get( 's' ) ];
 	}
 	return $return_value;
 }

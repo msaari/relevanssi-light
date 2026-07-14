@@ -15,5 +15,11 @@
     "scripts": {
         "lint": "./vendor/bin/phpcs -p -s",
 		"readme": "./vendor/bin/wp2md < readme.txt > readme.md"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }

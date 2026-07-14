@@ -5,7 +5,7 @@ Tags: search, fulltext
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.2.3
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Now when posts are saved, the custom fields will be added in the index. NOTE: Th
 For more complicated cases, you can override the default `relevanssi_light_update_post_data()` function Relevanssi Light uses (it's a pluggable function; see the source code for more details). For even more complicated cases, I would recommend using [Relevanssi](https://wordpress.org/plugins/relevanssi/), which will give you a lot more power to control what is indexed.
 
 == Changelog ==
+= 1.2.4 =
+* Fixes a problem where multiple queries during one page load wouldn't work correctly.
+
 = 1.2.3 =
 * Fixes a SQL injection vulnerability that affected REST searches. Thanks to Artus KG.
 
@@ -88,5 +91,5 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 * First release, minimum viable product!
 
 == Upgrade notice ==
-= 1.2.3 =
-* REST search SQL vulnerability fix.
+= 1.2.4 =
+* Fixes a problem where multiple queries during one page load wouldn't work correctly.

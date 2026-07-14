@@ -6,7 +6,7 @@
 **Requires at least:** 5.0 \
 **Tested up to:** 7.1 \
 **Requires PHP:** 7.2 \
-**Stable tag:** 1.2.3 \
+**Stable tag:** 1.2.4 \
 **License:** GPLv2 or later \
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,10 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 
 ## Changelog
 
+### 1.2.4
+
+* Fixes a problem where multiple queries during one page load wouldn't work correctly.
+
 ### 1.2.3
 
 * Fixes a SQL injection vulnerability that affected REST searches. Thanks to Artus KG.
@@ -98,5 +102,7 @@ For more complicated cases, you can override the default `relevanssi_light_updat
 
 ## Upgrade notice
 
-### 1.2.3
-* REST search SQL vulnerability fix.
+### 1.2.4
+
+* Fixes a problem where multiple queries during one page load wouldn't work correctly.
+
